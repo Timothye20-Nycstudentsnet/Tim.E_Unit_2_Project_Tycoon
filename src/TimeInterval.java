@@ -18,7 +18,7 @@ public class TimeInterval {
         return endTime;
     }
 
-    public Duration getElapsedTime() {
+    public Duration timeInterval() {
         if (this.startTime == null || this.endTime == null) {
             return null; // Or throw an exception
         }
