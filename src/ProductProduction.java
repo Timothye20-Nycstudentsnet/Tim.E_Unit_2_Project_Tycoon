@@ -1,14 +1,16 @@
 import java.util.Scanner;
 import java.time.Instant;
-import java.time.Duration;
 
+/*
+BUG: SALESTIME NEVER STOPS. ELAPSED TIME ADDS ONTO THE PREVIOUS TIME!!!!
+ */
 
 public class ProductProduction {
     public int inventoryCount = 0;
     Scanner s = new Scanner(System.in);
     // Attributes
     int productRate = 1;
-    int productBalance = 0;
+    int currency = 0;
     boolean makingProduct = false;
 
     public ProductProduction(int productRate, double waitPerProduct) {
@@ -57,7 +59,7 @@ public class ProductProduction {
         System.out.println( "--- |Menu| ---");
         System.out.println( "You can make " + productRate + " McChickens every second");
         System.out.println( "Your inventory is " + inventoryCount + " McChickens");
-        System.out.println( "Your current value is " + productBalance);
+        System.out.println( "Your current value is " + currency);
         System.out.println( "--- |Options| ---");
         System.out.print( "[ Type M to Return To Menu],[ Type P to Make Product]");
         if (startProduction) {
@@ -85,31 +87,66 @@ public class ProductProduction {
     double demand = 1;
     int logbase = 20;
     int storeInventory = 0;
-    int SalePotential = 0;
+    int salePotential = 0;
+    int inputtedAmt = 0;
     Instant salestartInstant = salesTime.start();
     public void makeSales() {
+        double timeholding = 0;
         System.out.println( "--- |Sales| ---");
-        if (salesMenuVisits == 0) {
-            System.out.println("Welcome to Sales!");
-            System.out.println("Here you can Automatically restock your stores, and sell McChickens for Cash!");
+        if (salesMenuVisits == 0) { // The MiniTutorial
+            System.out.println("Welcome to Stores Menu!");
+            System.out.println("Here you can Stock your stores to sell Mcchickens!");
             System.out.println("Come back when you have McChickens in your inventory!");
             salesMenuVisits++;
         } else if (inventoryCount == 0 ) {
             System.out.println("You have no inventory to sell!");
-        } else if (salesMenuVisits == 1){
-            System.out.println("What Decimal of your inventory would you like to input? (0-1)");
-            double inputPercentage = s.nextDouble();
-            System.out.println("Input percent: " + inputPercentage );
-            int inputtedAmt = (int) Math.round(inputPercentage * inventoryCount);
-            System.out.println("Inputted Inventory: " + inputtedAmt);
-            // Pick up Here
-            System.out.println("Store Inventory: " + inventoryCount);
+        } else if (salesMenuVisits == 1 ){ // This is beyond the MiniTutorial
+            salesInputPercentage();
+            salestartInstant = salesTime.start();
             salesMenuVisits++;
+        } else if (salesMenuVisits > 1) {
+            Instant salendInstant = salesTime.stop();
+            timeholding = salesTime.timeInterval().toMillis()/1000.0;
+            System.out.println("Elapsed time (seconds): " + timeholding);
+            System.out.println("Store Inventory: " + storeInventory);
+            System.out.println("Inventory: " + inventoryCount);
+            salePotential = (int) timeholding;
+            if (salePotential < storeInventory) { // If the amt of McChickens you COULDVE sold is less than Max
+                storeInventory -= salePotential;
+                System.out.println("Sold " + salePotential + " McChickens, Store InventoryCount is now: " + storeInventory);
+                System.out.println("(+ " + salePotential + "Dollars"); // Amt You Couldve Sold
+                currency += salePotential;
+            } else {
+                storeInventory = 0;
+                System.out.println("Sold All" + salePotential + "McChickens, Store InventoryCount: " + storeInventory);
+            }
+            salesInputPercentage();
+            // create product
+            // give option to restock or run an ad, adding a multiplier to the demand for the next salesmenu visit.
+            System.out.println( "--- |Sales| ---");
+            System.out.println();
         }
 
 
         System.out.println("Your Visits is now: " + salesMenuVisits);
         showMenu();
+    }
+
+    public void salesInputPercentage() {
+        System.out.println( "--- |Stocking| ---");
+        System.out.println("What Decimal of your inventory would you like to input? (0-1)");
+        double inputPercentage = s.nextDouble(); // Potentially make seperate input that takes integers 0-100. Also Could Make this optional.
+        System.out.println("Input percent: " + inputPercentage );
+        s.nextLine(); // No Clue what this does but code doesnt work without it
+        int calculateInputtedAmt = (int) Math.round(inputPercentage * inventoryCount);
+        System.out.println("Inputted Inventory: " + calculateInputtedAmt);
+        inventoryCount -= calculateInputtedAmt; // Pick up Here
+        inputtedAmt = calculateInputtedAmt; // Calculated stores the change, but keeps it until we no longer need to refrence
+        storeInventory += inputtedAmt;
+        System.out.println("Store Inventory: " + storeInventory);
+        System.out.println("(+ " + inputtedAmt + ")");
+        System.out.println( "--- |Stocking| ---");
+        System.out.println();
     }
 
 }
