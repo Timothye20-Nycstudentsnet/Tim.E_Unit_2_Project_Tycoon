@@ -12,6 +12,7 @@ public class Main {
             int productRate = 0; // How much it increases every wait
             double waitPerProduct = 0.2; // How long each wait is
             int productBalance = 0; // Balance of money :D
+            // Useless. Get rid of by final update.
 
             ProductProduction gameMoney = new ProductProduction(productRate,waitPerProduct);
 

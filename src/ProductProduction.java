@@ -65,6 +65,9 @@ public class ProductProduction {
         if (startProduction) {
             System.out.print(",[Type S to Manage Sales]");
         }
+        if (currency > 0) {
+            System.out.print(",[Type U to Manage Upgrades]");
+        }
         System.out.println( "");
         System.out.println( "--- |Menu| ---");
         System.out.println();
@@ -78,6 +81,9 @@ public class ProductProduction {
         }
         if (menuResponse.equals("S") && startProduction) {
             makeSales();
+        }
+        if (menuResponse.equals("U") && currency > 0) {
+            upgrades();
         }
 
     }
@@ -111,15 +117,17 @@ public class ProductProduction {
             System.out.println("Store Inventory: " + storeInventory);
             System.out.println("Inventory: " + inventoryCount);
             salePotential = (int) timeholding;
-            if (salePotential < storeInventory) { // If the amt of McChickens you COULDVE sold is less than Max
+            if (salePotential < storeInventory) { // If the amt of McChickens you COULD'VE sold is less than Max
                 storeInventory -= salePotential;
                 System.out.println("Sold " + salePotential + " McChickens, Store InventoryCount is now: " + storeInventory);
                 System.out.println("(+ " + salePotential + "Dollars"); // Amt You Couldve Sold
                 currency += salePotential;
             } else {
+                currency += storeInventory;
                 storeInventory = 0;
-                System.out.println("Sold All" + salePotential + "McChickens, Store InventoryCount: " + storeInventory);
+                System.out.println("Sold All " + salePotential + " McChickens, Store InventoryCount: " + storeInventory);
             }
+            salestartInstant = salesTime.start();
             salesInputPercentage();
             // create product
             // give option to restock or run an ad, adding a multiplier to the demand for the next salesmenu visit.
@@ -137,7 +145,7 @@ public class ProductProduction {
         System.out.println("What Decimal of your inventory would you like to input? (0-1)");
         double inputPercentage = s.nextDouble(); // Potentially make seperate input that takes integers 0-100. Also Could Make this optional.
         System.out.println("Input percent: " + inputPercentage );
-        s.nextLine(); // No Clue what this does but code doesnt work without it
+        s.nextLine(); // No Clue what this does but code doesn't work without it
         int calculateInputtedAmt = (int) Math.round(inputPercentage * inventoryCount);
         System.out.println("Inputted Inventory: " + calculateInputtedAmt);
         inventoryCount -= calculateInputtedAmt; // Pick up Here
@@ -149,4 +157,27 @@ public class ProductProduction {
         System.out.println();
     }
 
+    boolean startUpgrades = false;
+    int mcChickenUpgCost = 10;
+    public void upgrades() {
+        System.out.println( "--- |Upgrades| ---");
+        if (!startUpgrades) {
+            System.out.println( "This is the upgrades menu!, Speed up various elements to maximize your income!");
+            startUpgrades = true;
+        } else {
+            System.out.println("Input your Selected Upgrade with the corresponding letter, and the quantity with a number (Ex: A5)");
+            System.out.println( "Production Upgrades: [A| Add a new McChicken Factory, doubling your production rate! ($ " + mcChickenUpgCost + "),");
+            String upgradeResponse = s.nextLine();
+
+            if (upgradeResponse.equals("A")) {
+                System.out.println( "A. Adding Factory] ");
+                if (currency < mcChickenUpgCost){
+                    System.out.println( "You CANNOT Afford This Item");
+                } else {
+                    System.out.println( "You CAN Afford This Item");
+                }
+            }
+        }
+        showMenu();
+    }
 }
