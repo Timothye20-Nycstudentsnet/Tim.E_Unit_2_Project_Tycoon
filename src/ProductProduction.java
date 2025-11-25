@@ -60,6 +60,9 @@ public class ProductProduction {
         System.out.println( "You can make " + productRate + " McChickens every second");
         System.out.println( "Your inventory is " + inventoryCount + " McChickens");
         System.out.println( "Your current value is " + currency);
+        if (salesMenuVisits >= 1) {
+            System.out.print("The price of a McChicken is $" + mcChickenValue + "!");
+        }
         System.out.println( "--- |Options| ---");
         System.out.print( "[ Type M to Return To Menu],[ Type P to Make Product]");
         if (startProduction) {
@@ -167,6 +170,8 @@ public class ProductProduction {
 
     boolean startUpgrades = false;
     int mcChickenUpgCost = 20;
+    int storeUpgCost = 50;
+    int demandUpgCost = 100;
     public void upgrades() {
         System.out.println( "--- |Upgrades| ---");
         if (!startUpgrades) {
@@ -174,7 +179,11 @@ public class ProductProduction {
             startUpgrades = true;
         } else {
             System.out.println("Input your Selected Upgrade with the corresponding letter");
-            System.out.println( "Production Upgrades: [A| Invest in McChicken Factories, increasing production rate by 50% ($ " + mcChickenUpgCost + "),[B| Build a new Store, Increasing Demand by 1 ($ " + mcChickenUpgCost + ")");
+            System.out.println( "Production Upgrades: [A| Invest in McChicken Factories, increasing production rate by 50% ($ " + mcChickenUpgCost + ")");
+            System.out.println("[B| Build a new Store, Increasing Demand by 1 ($"  + storeUpgCost + ")");
+            if (demandMinimum > 3) {
+                System.out.println("[C| Reduce the McChicken price, Doubling Demand and Tripling it's potential range. ($"  + storeUpgCost + ")");
+            }
             String upgradeResponse = s.nextLine();
 
             if (upgradeResponse.equals("A")) {
@@ -190,8 +199,32 @@ public class ProductProduction {
 
                 }
             } else if (upgradeResponse.equals("B")) {
+                if (currency < storeUpgCost){
+                    System.out.println( "You CANNOT Afford This Item");
+                } else {
+                    System.out.println( "Bought Store Upgrade");
+                    demandMinimum += 1;
+                    System.out.println( "Demand: " + (demandMinimum + (0.5*rangeDemand)) + " ± " + rangeDemand ); // Demand = middle of the range,
+                    currency -= storeUpgCost;
+                    storeUpgCost = (int) (storeUpgCost* 1.25) + 5;
+
+                }
+            } else if (upgradeResponse.equals("C") && demandMinimum > 3) {
+            if (currency < demandUpgCost){
+                System.out.println( "You CANNOT Afford This Item");
+            } else if (mcChickenValue <= 0.25) {
+                System.out.println( "MAXED OUT UPGRADE!");
+            } else {
+                System.out.println( "Bought Demand Upgrade");
+                mcChickenValue -=0.25;
+                demandMinimum *= 2;
+                rangeDemand *= 3;
+                System.out.println( "Demand: " + (demandMinimum + (0.5*rangeDemand)) + " ± " + rangeDemand ); // Demand = middle of the range,
+                currency -= demandUpgCost;
+                demandUpgCost = (int) (demandUpgCost* 1.25) + 15;
 
             }
+        }
         }
         showMenu();
     }
