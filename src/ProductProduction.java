@@ -89,12 +89,14 @@ public class ProductProduction {
     }
 
     int salesMenuVisits = 0;
-    int storeCount = 1;
     double demand = 1;
+    double demandMinimum = 1;
+    double rangeDemand = 0.5;
     int logbase = 20;
     int storeInventory = 0;
     int salePotential = 0;
     int inputtedAmt = 0;
+    double mcChickenValue = 3.00;
     Instant salestartInstant = salesTime.start();
     public void makeSales() {
         double timeholding = 0;
@@ -116,14 +118,15 @@ public class ProductProduction {
             System.out.println("Elapsed time (seconds): " + timeholding);
             System.out.println("Store Inventory: " + storeInventory);
             System.out.println("Inventory: " + inventoryCount);
-            salePotential = (int) timeholding;
+            calcDemand();
+            salePotential = (int) (timeholding * demand);
             if (salePotential < storeInventory) { // If the amt of McChickens you COULD'VE sold is less than Max
                 storeInventory -= salePotential;
                 System.out.println("Sold " + salePotential + " McChickens, Store InventoryCount is now: " + storeInventory);
                 System.out.println("(+ " + salePotential + "Dollars"); // Amt You Couldve Sold
-                currency += salePotential;
-            } else {
-                currency += storeInventory;
+                currency += (int) (mcChickenValue * salePotential);
+            } else { // If the amt of McChickens you COULD'VE sold is equal to or greater than max.
+                currency += (int) (mcChickenValue * salePotential);
                 storeInventory = 0;
                 System.out.println("Sold All " + salePotential + " McChickens, Store InventoryCount: " + storeInventory);
             }
@@ -138,6 +141,11 @@ public class ProductProduction {
 
         System.out.println("Your Visits is now: " + salesMenuVisits);
         showMenu();
+    }
+
+    public void calcDemand() { // Calculate the Demand. Shrink to 2 Var
+        demand =(rangeDemand * Math.random()) + demandMinimum;
+        System.out.println("Demand: " + demand);
     }
 
     public void salesInputPercentage() {
@@ -158,15 +166,15 @@ public class ProductProduction {
     }
 
     boolean startUpgrades = false;
-    int mcChickenUpgCost = 10;
+    int mcChickenUpgCost = 20;
     public void upgrades() {
         System.out.println( "--- |Upgrades| ---");
         if (!startUpgrades) {
             System.out.println( "This is the upgrades menu!, Speed up various elements to maximize your income!");
             startUpgrades = true;
         } else {
-            System.out.println("Input your Selected Upgrade with the corresponding letter, and the quantity with a number (Ex: A5)");
-            System.out.println( "Production Upgrades: [A| Add a new McChicken Factory, doubling your production rate! ($ " + mcChickenUpgCost + "),");
+            System.out.println("Input your Selected Upgrade with the corresponding letter");
+            System.out.println( "Production Upgrades: [A| Invest in McChicken Factories, increasing production rate by 50% ($ " + mcChickenUpgCost + "),[B| Build a new Store, Increasing Demand by 1 ($ " + mcChickenUpgCost + ")");
             String upgradeResponse = s.nextLine();
 
             if (upgradeResponse.equals("A")) {
@@ -174,8 +182,15 @@ public class ProductProduction {
                 if (currency < mcChickenUpgCost){
                     System.out.println( "You CANNOT Afford This Item");
                 } else {
-                    System.out.println( "You CAN Afford This Item");
+                    System.out.println( "Bought Factory Upgrade");
+                    productRate *= 1.5;
+                    System.out.println( "Production Rate: " + productRate + " McChickens Per Second" );
+                    currency -= mcChickenUpgCost;
+                    mcChickenUpgCost = (int) (mcChickenUpgCost* 1.5) + 10;
+
                 }
+            } else if (upgradeResponse.equals("B")) {
+
             }
         }
         showMenu();
