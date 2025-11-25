@@ -60,8 +60,8 @@ public class ProductProduction {
         System.out.println( "You can make " + productRate + " McChickens every second");
         System.out.println( "Your inventory is " + inventoryCount + " McChickens");
         System.out.println( "Your current value is " + currency);
-        if (salesMenuVisits >= 1) {
-            System.out.print("The price of a McChicken is $" + mcChickenValue + "!");
+        if (salesMenuVisits >= 2) {
+            System.out.println("The price of a McChicken is $" + mcChickenValue + "!");
         }
         System.out.println( "--- |Options| ---");
         System.out.print( "[ Type M to Return To Menu],[ Type P to Make Product]");
@@ -78,17 +78,21 @@ public class ProductProduction {
 
         if (menuResponse.equals("M")) {
             showMenu();
-        }
-        if (menuResponse.equals("P")) {
+        } else if (menuResponse.equals("P")) {
             makeProduct();
-        }
-        if (menuResponse.equals("S") && startProduction) {
+        } else if (menuResponse.equals("S") && startProduction) {
             makeSales();
-        }
-        if (menuResponse.equals("U") && currency > 0) {
+        } else if (menuResponse.equals("U") && currency > 0) {
             upgrades();
+        } else {
+            invalidcommand();
         }
 
+    }
+
+    public void invalidcommand() {
+        System.out.println("Invalid Command. Returning to Menu");
+        showMenu();
     }
 
     int salesMenuVisits = 0;
@@ -126,7 +130,7 @@ public class ProductProduction {
             if (salePotential < storeInventory) { // If the amt of McChickens you COULD'VE sold is less than Max
                 storeInventory -= salePotential;
                 System.out.println("Sold " + salePotential + " McChickens, Store InventoryCount is now: " + storeInventory);
-                System.out.println("(+ " + salePotential + "Dollars"); // Amt You Couldve Sold
+                System.out.println("(+ " + (salePotential * mcChickenValue) + "Dollars"); // Amt You Couldve Sold
                 currency += (int) (mcChickenValue * salePotential);
             } else { // If the amt of McChickens you COULD'VE sold is equal to or greater than max.
                 currency += (int) (mcChickenValue * salePotential);
@@ -142,7 +146,8 @@ public class ProductProduction {
         }
 
 
-        System.out.println("Your Visits is now: " + salesMenuVisits);
+        System.out.println("Press any key to return to Main Menu");
+        String salesMenuBuffer = s.nextLine();
         showMenu();
     }
 
@@ -155,6 +160,9 @@ public class ProductProduction {
         System.out.println( "--- |Stocking| ---");
         System.out.println("What Decimal of your inventory would you like to input? (0-1)");
         double inputPercentage = s.nextDouble(); // Potentially make seperate input that takes integers 0-100. Also Could Make this optional.
+        if (inputPercentage > 1 || inputPercentage < 0) {
+            invalidcommand();
+        }
         System.out.println("Input percent: " + inputPercentage );
         s.nextLine(); // No Clue what this does but code doesn't work without it
         int calculateInputtedAmt = (int) Math.round(inputPercentage * inventoryCount);
@@ -169,9 +177,9 @@ public class ProductProduction {
     }
 
     boolean startUpgrades = false;
-    int mcChickenUpgCost = 20;
-    int storeUpgCost = 50;
-    int demandUpgCost = 100;
+    int mcChickenUpgCost = 50;
+    int storeUpgCost = 75;
+    int demandUpgCost = 200;
     public void upgrades() {
         System.out.println( "--- |Upgrades| ---");
         if (!startUpgrades) {
@@ -180,9 +188,9 @@ public class ProductProduction {
         } else {
             System.out.println("Input your Selected Upgrade with the corresponding letter");
             System.out.println( "Production Upgrades: [A| Invest in McChicken Factories, increasing production rate by 50% ($ " + mcChickenUpgCost + ")");
-            System.out.println("[B| Build a new Store, Increasing Demand by 1 ($"  + storeUpgCost + ")");
+            System.out.println("[B| Build a new Store, Increasing Demand by 1.5 ($"  + storeUpgCost + ")");
             if (demandMinimum > 3) {
-                System.out.println("[C| Reduce the McChicken price, Doubling Demand and Tripling it's potential range. ($"  + storeUpgCost + ")");
+                System.out.println("[C| Reduce the McChicken price by 25c, Tripling demand's potential range. ($"  + demandUpgCost + ")");
             }
             String upgradeResponse = s.nextLine();
 
@@ -195,7 +203,7 @@ public class ProductProduction {
                     productRate *= 1.5;
                     System.out.println( "Production Rate: " + productRate + " McChickens Per Second" );
                     currency -= mcChickenUpgCost;
-                    mcChickenUpgCost = (int) (mcChickenUpgCost* 1.5) + 10;
+                    mcChickenUpgCost = (int) (mcChickenUpgCost* 1.5) + 15;
 
                 }
             } else if (upgradeResponse.equals("B")) {
@@ -203,7 +211,7 @@ public class ProductProduction {
                     System.out.println( "You CANNOT Afford This Item");
                 } else {
                     System.out.println( "Bought Store Upgrade");
-                    demandMinimum += 1;
+                    demandMinimum += 1.5;
                     System.out.println( "Demand: " + (demandMinimum + (0.5*rangeDemand)) + " ± " + rangeDemand ); // Demand = middle of the range,
                     currency -= storeUpgCost;
                     storeUpgCost = (int) (storeUpgCost* 1.25) + 5;
@@ -216,16 +224,17 @@ public class ProductProduction {
                 System.out.println( "MAXED OUT UPGRADE!");
             } else {
                 System.out.println( "Bought Demand Upgrade");
-                mcChickenValue -=0.25;
-                demandMinimum *= 2;
+                mcChickenValue -= 0.25;
                 rangeDemand *= 3;
                 System.out.println( "Demand: " + (demandMinimum + (0.5*rangeDemand)) + " ± " + rangeDemand ); // Demand = middle of the range,
                 currency -= demandUpgCost;
-                demandUpgCost = (int) (demandUpgCost* 1.25) + 15;
+                demandUpgCost = (int) (demandUpgCost* 1.75) + 15;
 
             }
         }
         }
+        System.out.println( "--- |Upgrades| ---");
+        System.out.println( "");
         showMenu();
     }
 }
