@@ -126,7 +126,7 @@ public class ProductProduction {
             System.out.println("Store Inventory: " + storeInventory);
             System.out.println("Inventory: " + inventoryCount);
             calcDemand();
-            salePotential = (int) (timeholding * demand);
+            salePotential = (int) (1.5 * timeholding * demand); // 1.5 to speed up amt sold
             if (salePotential < storeInventory) { // If the amt of McChickens you COULD'VE sold is less than Max
                 storeInventory -= salePotential;
                 System.out.println("Sold " + salePotential + " McChickens, Store InventoryCount is now: " + storeInventory);
@@ -144,10 +144,6 @@ public class ProductProduction {
             System.out.println( "--- |Sales| ---");
             System.out.println();
         }
-
-
-        System.out.println("Press any key to return to Main Menu");
-        String salesMenuBuffer = s.nextLine();
         showMenu();
     }
 
@@ -162,18 +158,19 @@ public class ProductProduction {
         double inputPercentage = s.nextDouble(); // Potentially make seperate input that takes integers 0-100. Also Could Make this optional.
         if (inputPercentage > 1 || inputPercentage < 0) {
             invalidcommand();
+        } else {
+            System.out.println("Input percent: " + inputPercentage);
+            s.nextLine(); // No Clue what this does but code doesn't work without it
+            int calculateInputtedAmt = (int) Math.round(inputPercentage * inventoryCount);
+            System.out.println("Inputted Inventory: " + calculateInputtedAmt);
+            inventoryCount -= calculateInputtedAmt; // Pick up Here
+            inputtedAmt = calculateInputtedAmt; // Calculated stores the change, but keeps it until we no longer need to refrence
+            storeInventory += inputtedAmt;
+            System.out.println("Store Inventory: " + storeInventory);
+            System.out.println("(+ " + inputtedAmt + ")");
+            System.out.println("--- |Stocking| ---");
+            System.out.println();
         }
-        System.out.println("Input percent: " + inputPercentage );
-        s.nextLine(); // No Clue what this does but code doesn't work without it
-        int calculateInputtedAmt = (int) Math.round(inputPercentage * inventoryCount);
-        System.out.println("Inputted Inventory: " + calculateInputtedAmt);
-        inventoryCount -= calculateInputtedAmt; // Pick up Here
-        inputtedAmt = calculateInputtedAmt; // Calculated stores the change, but keeps it until we no longer need to refrence
-        storeInventory += inputtedAmt;
-        System.out.println("Store Inventory: " + storeInventory);
-        System.out.println("(+ " + inputtedAmt + ")");
-        System.out.println( "--- |Stocking| ---");
-        System.out.println();
     }
 
     boolean startUpgrades = false;
@@ -203,7 +200,7 @@ public class ProductProduction {
                     productRate *= 1.5;
                     System.out.println( "Production Rate: " + productRate + " McChickens Per Second" );
                     currency -= mcChickenUpgCost;
-                    mcChickenUpgCost = (int) (mcChickenUpgCost* 1.5) + 15;
+                    mcChickenUpgCost = (int) (mcChickenUpgCost* 1.5) + 10;
 
                 }
             } else if (upgradeResponse.equals("B")) {
@@ -230,8 +227,10 @@ public class ProductProduction {
                 currency -= demandUpgCost;
                 demandUpgCost = (int) (demandUpgCost* 1.75) + 15;
 
+                }
+            } else {
+                invalidcommand();
             }
-        }
         }
         System.out.println( "--- |Upgrades| ---");
         System.out.println( "");
