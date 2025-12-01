@@ -4,7 +4,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
-
+        System.out.println( "[Drag up the output menu for the best experience]");
         System.out.println( "--Begin Game? (Y/N)--");
         String beginResponse = s.nextLine();
 
